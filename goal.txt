@@ -1,0 +1,13 @@
+🎬 Project Goal (Week 1)
+
+Build a working app where:
+
+    You can log movies you’ve watched
+
+    View them in a table or list
+
+    See simple stats (e.g. total watched, average rating)
+
+    Powered by a FastAPI backend + React frontend
+
+    Implement an alternative backend in C# 
