@@ -1,0 +1,13 @@
+to enable script execution in powershell:
+1.First, Open PowerShell with Run as Administrator.
+
+2.Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+
+3.After that type Y and press Enter.
+
+for backend venv:
+cd backend 
+run: venv\Scripts\activate
+
+to start backend:
+fastapi dev .\main.py
