@@ -11,3 +11,9 @@ run: venv\Scripts\activate
 
 to start backend:
 fastapi dev .\main.py
+
+frontend runs at:
+http://localhost:5173/
+
+backend runs at:
+http://127.0.0.1:8000

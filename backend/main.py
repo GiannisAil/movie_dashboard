@@ -3,13 +3,25 @@ from typing import Annotated
 from pydantic import BaseModel
 from datetime import date
 from models import Movie
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# CORS setup for communicating with the frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 temp_db: list[Movie]
+
+# letterboxd data includes Date,Name,Year,Letterboxd URI.
+# We would need to get extra movie data from an external API or database.
 temp_db = [
-    Movie(id=1, title="The Matrix", year=1999, rating=9, date_watched="2024-02-14", genre=["Action"], director="Wachowski"),
+    Movie(id=1, title="The Matrix", year=1999, rating=9, date_watched="2024-02-14", genre=["Action", "Thriller"], director="Wachowski"),
     Movie(id=2, title="La La Land", year=2016, rating=8, date_watched="2024-03-02", genre=["Musical"], director="Chazelle")
 ]
 
@@ -25,3 +37,7 @@ def add_movie(movie: Movie):
     else:
         temp_db.append(movie)
     return movie
+
+@app.get("/")
+def allok():
+    return {"message": "All systems operational!"}
