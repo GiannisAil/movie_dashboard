@@ -31,7 +31,7 @@
 
 function Movie({movie}) {
     return (
-        <div className="movie">
+        <div className="movie" style={{ border: '1px solid #ccc', padding: '10px', margin: '10px' }}>
             <h2>{movie.title} ({movie.year})</h2>
             <p>Rating: {movie.rating}</p>
             <p>Date Watched: {movie.date_watched}</p>
