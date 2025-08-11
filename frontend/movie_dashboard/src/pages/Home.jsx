@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Movie from '../components/Movie';
+import UploadCSV from '../components/UploadCSV';
 import { getMovies } from '../services/api';
 
 function Home(){
@@ -19,29 +20,30 @@ function Home(){
 
     const [movie, setMovie] = useState(null);
 
-    useEffect(() => {
-        let ignore = false;
+    // useEffect(() => {
+    //     let ignore = false;
 
-        async function fetchMovies(){
-            const movies = await getMovies();
-            if(!ignore){
-                setMovie(movies[0]);
-            }
-        }
-        fetchMovies();
+    //     async function fetchMovies(){
+    //         const movies = await getMovies();
+    //         if(!ignore){
+    //             setMovie(movies[0]);
+    //         }
+    //     }
+    //     fetchMovies();
         
-        return () => {
-            ignore = true; // Cleanup
-        };
+    //     return () => {
+    //         ignore = true; // Cleanup
+    //     };
 
-    }, []);
+    // }, []);
 
     
     return (
         <div>
-            <h1>Movie Dashboard</h1>
-            <h3>Your Movies:</h3>
-            {movie && <Movie movie={movie} />}
+            {/* <h1>Movie Dashboard</h1> */}
+            {/* <h3>Your Movies:</h3> */}
+            {/* {movie && <Movie movie={movie} />} */}
+            <UploadCSV />
         </div>
     );
 }
