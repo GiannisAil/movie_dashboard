@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, File, UploadFile
 from typing import Annotated
 from pydantic import BaseModel
 from datetime import date
 from models import Movie
 from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
 
 app = FastAPI()
 
@@ -37,6 +38,11 @@ def add_movie(movie: Movie):
     else:
         temp_db.append(movie)
     return movie
+
+@app.post("/api/upload_csv")
+async def get_csv(csv_file: UploadFile):
+    # print(f"Received file: {csv_file.filename}")
+    return {"filename": csv_file.filename}
 
 @app.get("/")
 def allok():

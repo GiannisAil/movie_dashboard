@@ -1,14 +1,19 @@
 import {useState} from 'react';
+import { send_csv } from '../services/api';
 
 export default function UploadCSV(){
 
     const [file, setFile] = useState(null);
+    
     const onFileChange = (event) => {
         setFile(event.target.files[0]);
     }
 
-    const onFileUpload = () => {
-        return null;
+    const onFileUpload = async () => {
+        const formData = new FormData();
+        formData.append('csv_file', file);
+        const res = await send_csv(formData);
+        console.log(res);
     }
 
     return (
