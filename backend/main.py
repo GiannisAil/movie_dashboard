@@ -42,7 +42,13 @@ def add_movie(movie: Movie):
 @app.post("/api/upload_csv")
 async def get_csv(csv_file: UploadFile):
     # print(f"Received file: {csv_file.filename}")
-    return {"filename": csv_file.filename}
+
+    df = pd.read_csv(csv_file.file)
+    movie_num = len(df)
+    oldest = df.loc[df['Year'].idxmin()]
+    oldest_name = oldest['Name']
+
+    return {"count": movie_num, "oldest_movie": oldest_name}
 
 @app.get("/")
 def allok():
