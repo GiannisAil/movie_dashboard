@@ -46,7 +46,17 @@ async def get_csv(csv_file: UploadFile):
     df = pd.read_csv(csv_file.file)
     movie_num = len(df)
     oldest = df.loc[df['Year'].idxmin()]
-    oldest_name = oldest['Name']
+    oldest_name = oldest['Name'] # also return year
+
+    # newest movie
+    # return most watched director 
+    # movies watched per year 
+    # top genres
+    # average release year
+    # actor/actress stats
+    # most active month 
+    # movies watched per weekday
+    # average movie length / longest / shortest 
 
     return {"count": movie_num, "oldest_movie": oldest_name}
 
