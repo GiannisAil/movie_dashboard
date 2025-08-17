@@ -1,6 +1,7 @@
 # Python
 backend/venv/
 __pycache__/
+backend/constants.py
 
 # Node
 frontend/**/node_modules/
