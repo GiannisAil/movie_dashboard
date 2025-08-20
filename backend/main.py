@@ -5,7 +5,7 @@ from datetime import date
 from models import Movie as MovieModel
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
-from tmdbv3api import TMDb, Search
+from tmdbv3api import TMDb, Search, Movie
 import constants 
 
 app = FastAPI()
@@ -15,6 +15,7 @@ tmdb.language = 'en'
 tmdb.api_key = constants.TMDB_API_KEY
 
 api_search = Search()
+id_search = Movie()
 
 # TMDB genre IDs to genre names
 genreId = { 28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 99: "Documentary", 
@@ -67,6 +68,7 @@ async def get_csv(csv_file: UploadFile):
         year = row.get("Year")
         tmdb_data = api_search.movies(str(title), year=int(year))
         tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year
+        movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
 
         enriched.append({
             "name": title,
@@ -77,9 +79,14 @@ async def get_csv(csv_file: UploadFile):
             "release_date": tmdb_data.get("release_date") if tmdb_data else None,
             "vote_average": tmdb_data.get("vote_average") if tmdb_data else None,
             "genre_ids": tmdb_data.get("genre_ids") if tmdb_data else None,
+            "budget": movie_data.budget if movie_data else None,
+            "original_language": movie_data.original_language if movie_data else None,
+            "runtime": movie_data.runtime if movie_data else None,
+            "revenue": movie_data.revenue if movie_data else None, 
+            "director": next((c.name for c in movie_data.casts.crew if c.job == "Director"), None) if movie_data else None,
         })
     
-    # might get director info later as well
+    
     df = pd.DataFrame(enriched)
 
 
@@ -107,6 +114,8 @@ async def get_csv(csv_file: UploadFile):
     # most active month 
     # movies watched per weekday
     # average movie length / longest / shortest 
+
+    print(df.iloc[[1]]) #test, it works
 
     return {"count": movie_num, 
             "oldest_movie": {"name": oldest_name, "year": oldest_year},
