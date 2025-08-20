@@ -5,7 +5,7 @@ from datetime import date
 from models import Movie as MovieModel
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
-from tmdbv3api import TMDb, Movie
+from tmdbv3api import TMDb, Search
 import constants 
 
 app = FastAPI()
@@ -14,7 +14,14 @@ tmdb = TMDb()
 tmdb.language = 'en'
 tmdb.api_key = constants.TMDB_API_KEY
 
-movie = Movie()
+api_search = Search()
+
+# TMDB genre IDs to genre names
+genreId = { 28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 99: "Documentary", 
+           18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History", 27: "Horror", 10402: "Music", 
+           9648: "Mystery", 10749: "Romance", 878: "Science Fiction", 10770: "TV Movie", 53: "Thriller", 
+           10752: "War", 37: "Western" }
+
 
 # CORS setup for communicating with the frontend
 app.add_middleware(
@@ -51,25 +58,46 @@ def add_movie(movie: MovieModel):
 async def get_csv(csv_file: UploadFile):
     # print(f"Received file: {csv_file.filename}")
 
-    df = pd.read_csv(csv_file.file)
+    csv_df = pd.read_csv(csv_file.file)
 
     # populate user's csv with extra data from the tmdb api
+    enriched = []
+    for _, row in csv_df.iterrows():
+        title = row.get("Name")
+        year = row.get("Year")
+        tmdb_data = api_search.movies(str(title), year=int(year))
+        tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year
+
+        enriched.append({
+            "name": title,
+            "year": year,
+            "tmdb_id": tmdb_data["id"] if tmdb_data else None,
+            "poster": f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}" if tmdb_data and tmdb_data.get("poster_path") else None,
+            "overview": tmdb_data.get("overview") if tmdb_data else None,
+            "release_date": tmdb_data.get("release_date") if tmdb_data else None,
+            "vote_average": tmdb_data.get("vote_average") if tmdb_data else None,
+            "genre_ids": tmdb_data.get("genre_ids") if tmdb_data else None,
+        })
+    
+    # might get director info later as well
+    df = pd.DataFrame(enriched)
+
 
     # number of movies watched
     movie_num = len(df)
 
     # find the oldest movie watched, check for day/month after tmdb api integration
-    oldest = df.loc[df['Year'].idxmin()]
-    oldest_year = oldest['Year'].item()
-    oldest_name = oldest['Name'] 
+    oldest = df.loc[df['year'].idxmin()]
+    oldest_year = oldest['year'].item()
+    oldest_name = oldest['name']
 
     # find the newest movie watched
-    newest = df.loc[df['Year'].idxmax()]
-    newest_year = newest['Year'].item()
-    newest_name = newest['Name']
+    newest = df.loc[df['year'].idxmax()]
+    newest_year = newest['year'].item()
+    newest_name = newest['name']
 
     # average release year
-    average_year = df['Year'].mean()
+    average_year = df['year'].mean()
     average_year = round(average_year)
 
     # return most watched director 
@@ -88,7 +116,7 @@ async def get_csv(csv_file: UploadFile):
 
 @app.get("/")
 def allok():
-    search = movie.search("Memories of murder") # tmdb api test 
-    for res in search:
-        print(f"Title: {res.title}, Release Date: {res.release_date}, Overview: {res.overview}")
+    # search = movie.search("Memories of murder") # tmdb api test 
+    search = api_search.movies("Memories of murder", year=2003)
+    print(search[0])
     return {"message": "All systems operational!"}
