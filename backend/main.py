@@ -112,20 +112,24 @@ async def get_csv(csv_file: UploadFile):
     genre_counts = df_genres['genre_ids'].value_counts()
     favorite_genres = genre_counts.head(5).to_dict() # these are the top 5 genres, dict doesn't keep order
 
-    # return most watched director 
+    # get most watched directors
+    df_directors = df['director'].value_counts() 
+    fav_directors = df_directors.head(5).to_dict()
+
     # movies watched per year 
     # actor/actress stats
     # most active month 
     # movies watched per weekday
     # average movie length / longest / shortest 
 
-    print(genre_counts.to_string()) #test, it works
+    print(df_directors.to_string()) #test, it works
 
     return {"count": movie_num, 
             "oldest_movie": {"name": oldest_name, "year": oldest_year},
             "newest_movie": {"name": newest_name, "year": newest_year},
             "average_year": average_year,
             "favorite_genres": favorite_genres,
+            "favorite_directors": fav_directors,
             }
 
 @app.get("/")
