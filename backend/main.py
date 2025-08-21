@@ -66,13 +66,15 @@ async def get_csv(csv_file: UploadFile):
     for _, row in csv_df.iterrows():
         title = row.get("Name")
         year = row.get("Year")
+        watch_date = row.get("Date")
         tmdb_data = api_search.movies(str(title), year=int(year))
-        tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year
+        tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year. might have to think this more
         movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
 
         enriched.append({
             "name": title,
             "year": year,
+            "watch_date": watch_date,
             "tmdb_id": tmdb_data["id"] if tmdb_data else None,
             "poster": f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}" if tmdb_data and tmdb_data.get("poster_path") else None,
             "overview": tmdb_data.get("overview") if tmdb_data else None,
@@ -117,12 +119,40 @@ async def get_csv(csv_file: UploadFile):
     fav_directors = df_directors.head(5).to_dict()
 
     # movies watched per year 
-    # actor/actress stats
-    # most active month 
-    # movies watched per weekday
-    # average movie length / longest / shortest 
+    df['watch_date'] = pd.to_datetime(df['watch_date'], errors='coerce')
 
-    print(df_directors.to_string()) #test, it works
+    df['watch_year'] = df['watch_date'].dt.year
+    movies_per_year = df['watch_year'].value_counts().to_dict()
+
+    # most active months
+    df['watch_month'] = df['watch_date'].dt.month
+    movies_per_month = df['watch_month'].value_counts().to_dict()
+
+    # movies watched per weekday
+    df['watch_weekday'] = df['watch_date'].dt.day_name()
+    movies_per_weekday = df['watch_weekday'].value_counts().to_dict()
+
+    #movies watched by year-month pair. to show watching trends
+    df['year_month'] = df['watch_date'].dt.to_period('M').astype(str)
+    movies_per_year_month = df['year_month'].value_counts().to_dict()
+
+    # average runtime
+    average_runtime = df['runtime'].mean()
+    average_runtime = round(average_runtime) 
+
+    # longest movie 
+    longest_movie = df.loc[df['runtime'].idxmax()]
+    longest_movie_name = longest_movie['name']
+    longest_movie_runtime = longest_movie['runtime'].item()
+
+    # # shortest movie
+    shortest_movie = df.loc[df['runtime'].idxmin()]
+    shortest_movie_name = shortest_movie['name']
+    shortest_movie_runtime = shortest_movie['runtime'].item()
+
+    # actor/actress stats
+
+    # print(movies_per_year) #test, it works
 
     return {"count": movie_num, 
             "oldest_movie": {"name": oldest_name, "year": oldest_year},
@@ -130,6 +160,13 @@ async def get_csv(csv_file: UploadFile):
             "average_year": average_year,
             "favorite_genres": favorite_genres,
             "favorite_directors": fav_directors,
+            "movies_per_year": movies_per_year,
+            "movies_per_month": movies_per_month,
+            "movies_per_weekday": movies_per_weekday,
+            "movies_per_year_month": movies_per_year_month,
+            "average_runtime": average_runtime,
+            "longest_movie": {"name": longest_movie_name, "runtime": longest_movie_runtime},
+            "shortest_movie": {"name": shortest_movie_name, "runtime": shortest_movie_runtime},
             }
 
 @app.get("/")
