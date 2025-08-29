@@ -90,8 +90,12 @@ async def get_csv(csv_file: UploadFile):
         })
     
     
-    df = pd.DataFrame(enriched)
+    # df = pd.DataFrame(enriched)
 
+    cache = pd.json_normalize(enriched)
+    cache.to_csv("movies_cache.csv", index=False) # save the result from api calls for faster development
+
+    df = pd.read_csv("movies_cache.csv") # load data from file for faster development
 
     # number of movies watched
     movie_num = len(df)
