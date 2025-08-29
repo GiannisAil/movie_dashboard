@@ -61,41 +61,42 @@ async def get_csv(csv_file: UploadFile):
 
     csv_df = pd.read_csv(csv_file.file)
 
-    # populate user's csv with extra data from the tmdb api
-    enriched = []
-    for _, row in csv_df.iterrows():
-        title = row.get("Name")
-        year = row.get("Year")
-        watch_date = row.get("Date")
-        tmdb_data = api_search.movies(str(title), year=int(year))
-        tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year. might have to think this more
-        movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
-        # remove the row if the api search doesn't return anything, it most likely is a tv series
+    # # populate user's csv with extra data from the tmdb api
+    # enriched = []
+    # for _, row in csv_df.iterrows():
+    #     title = row.get("Name")
+    #     year = row.get("Year")
+    #     watch_date = row.get("Date")
+    #     tmdb_data = api_search.movies(str(title), year=int(year))
+    #     tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year. might have to think this more
+    #     movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
+    #     # remove the row if the api search doesn't return anything, it most likely is a tv series
 
-        enriched.append({
-            "name": title,
-            "year": year,
-            "watch_date": watch_date,
-            "tmdb_id": tmdb_data["id"] if tmdb_data else None,
-            "poster": f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}" if tmdb_data and tmdb_data.get("poster_path") else None,
-            "overview": tmdb_data.get("overview") if tmdb_data else None,
-            "release_date": tmdb_data.get("release_date") if tmdb_data else None,
-            "vote_average": tmdb_data.get("vote_average") if tmdb_data else None,
-            "genre_ids": tmdb_data.get("genre_ids") if tmdb_data else None,
-            "budget": movie_data.budget if movie_data else None,
-            "original_language": movie_data.original_language if movie_data else None,
-            "runtime": movie_data.runtime if movie_data else None,
-            "revenue": movie_data.revenue if movie_data else None, 
-            "director": next((c.name for c in movie_data.casts.crew if c.job == "Director"), None) if movie_data else None,
-        })
+    #     enriched.append({
+    #         "name": title,
+    #         "year": year,
+    #         "watch_date": watch_date,
+    #         "tmdb_id": tmdb_data["id"] if tmdb_data else None,
+    #         "poster": f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}" if tmdb_data and tmdb_data.get("poster_path") else None,
+    #         "overview": tmdb_data.get("overview") if tmdb_data else None,
+    #         "release_date": tmdb_data.get("release_date") if tmdb_data else None,
+    #         "vote_average": tmdb_data.get("vote_average") if tmdb_data else None,
+    #         "genre_ids": tmdb_data.get("genre_ids") if tmdb_data else None,
+    #         "budget": movie_data.budget if movie_data else None,
+    #         "original_language": movie_data.original_language if movie_data else None,
+    #         "runtime": movie_data.runtime if movie_data else None,
+    #         "revenue": movie_data.revenue if movie_data else None, 
+    #         "director": next((c.name for c in movie_data.casts.crew if c.job == "Director"), None) if movie_data else None,
+    #     })
     
     
     # df = pd.DataFrame(enriched)
 
-    cache = pd.json_normalize(enriched)
-    cache.to_csv("movies_cache.csv", index=False) # save the result from api calls for faster development
+    # # Save
+    # df.to_pickle("movies_cache.pkl") # save the result from api calls for faster development
 
-    df = pd.read_csv("movies_cache.csv") # load data from file for faster development
+    # Load
+    df = pd.read_pickle("movies_cache.pkl") 
 
     # number of movies watched
     movie_num = len(df)
