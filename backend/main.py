@@ -70,6 +70,7 @@ async def get_csv(csv_file: UploadFile):
         tmdb_data = api_search.movies(str(title), year=int(year))
         tmdb_data = tmdb_data[0] # get the first result, since we are using title + release year. might have to think this more
         movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
+        # remove the row if the api search doesn't return anything, it most likely is a tv series
 
         enriched.append({
             "name": title,
@@ -118,11 +119,17 @@ async def get_csv(csv_file: UploadFile):
     df_directors = df['director'].value_counts() 
     fav_directors = df_directors.head(5).to_dict()
 
-    # movies watched per year 
+    # convert date to pandas datetime
     df['watch_date'] = pd.to_datetime(df['watch_date'], errors='coerce')
 
+    # movies watched per year, and which movies
     df['watch_year'] = df['watch_date'].dt.year
-    movies_per_year = df['watch_year'].value_counts().to_dict()
+    movies_per_year = (
+        df.groupby("watch_year")["name"]
+        .apply(list)
+        .apply(lambda movies: {"count": len(movies), "movies": movies})
+        .to_dict()
+    )
 
     # most active months
     df['watch_month'] = df['watch_date'].dt.month
