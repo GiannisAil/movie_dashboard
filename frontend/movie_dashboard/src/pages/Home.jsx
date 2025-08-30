@@ -37,13 +37,15 @@ function Home(){
 
     // }, []);
 
-    
+    const [stats, setStats] = useState(null)
+
     return (
         <div>
             {/* <h1>Movie Dashboard</h1> */}
             {/* <h3>Your Movies:</h3> */}
             {/* {movie && <Movie movie={movie} />} */}
-            <UploadCSV />
+            <UploadCSV statsChanger={setStats} />
+            {stats && <p>i got the stats lol</p>}
         </div>
     );
 }

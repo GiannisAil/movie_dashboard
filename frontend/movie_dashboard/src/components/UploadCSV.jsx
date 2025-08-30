@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import { send_csv } from '../services/api';
 
-export default function UploadCSV(){
+export default function UploadCSV({statsChanger}){
 
     const [file, setFile] = useState(null);
     
@@ -13,6 +13,7 @@ export default function UploadCSV(){
         const formData = new FormData();
         formData.append('csv_file', file);
         const res = await send_csv(formData);
+        statsChanger(res);
         console.log(res);
     }
 
