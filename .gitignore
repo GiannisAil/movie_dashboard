@@ -2,6 +2,7 @@
 backend/venv/
 __pycache__/
 backend/constants.py
+backend/movies_cache.pkl
 
 # Node
 frontend/**/node_modules/
@@ -9,3 +10,4 @@ frontend/**/node_modules/
 # General
 .DS_Store
 .env
+goal.txt

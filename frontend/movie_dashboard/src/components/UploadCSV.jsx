@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import { send_csv } from '../services/api';
+import { Button } from "@chakra-ui/react"
 
 export default function UploadCSV({statsChanger}){
 
@@ -25,7 +26,7 @@ export default function UploadCSV({statsChanger}){
             { file && (
                 <div>
                     <h2>File Selected: {file.name}</h2>
-                    <button onClick={onFileUpload}>Get Your Stats!</button>
+                    <Button onClick={onFileUpload}>Get Your Stats!</Button>
                 </div>
             )}
         </div>
