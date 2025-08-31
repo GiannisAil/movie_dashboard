@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Movie from '../components/Movie';
 import UploadCSV from '../components/UploadCSV';
+import Stats from '../components/Stats';
 import { getMovies } from '../services/api';
 
 function Home(){
@@ -45,7 +46,7 @@ function Home(){
             {/* <h3>Your Movies:</h3> */}
             {/* {movie && <Movie movie={movie} />} */}
             <UploadCSV statsChanger={setStats} />
-            {stats && <p>i got the stats lol</p>}
+            {stats && <Stats stats={stats} />}
         </div>
     );
 }
