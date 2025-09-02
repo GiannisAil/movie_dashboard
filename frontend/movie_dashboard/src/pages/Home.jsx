@@ -3,6 +3,8 @@ import Movie from '../components/Movie';
 import UploadCSV from '../components/UploadCSV';
 import Stats from '../components/Stats';
 import { getMovies } from '../services/api';
+import Navbar from '../components/Navbar';
+import { Box } from '@chakra-ui/react'
 
 function Home(){
     // movie data for testing
@@ -41,13 +43,15 @@ function Home(){
     const [stats, setStats] = useState(null)
 
     return (
-        <div>
+        <Box>
+            <title>Letterboxd Unboxed</title>
+            {/* <Navbar /> */}
             {/* <h1>Movie Dashboard</h1> */}
             {/* <h3>Your Movies:</h3> */}
             {/* {movie && <Movie movie={movie} />} */}
             <UploadCSV statsChanger={setStats} />
             {stats && <Stats stats={stats} />}
-        </div>
+        </Box>
     );
 }
 
