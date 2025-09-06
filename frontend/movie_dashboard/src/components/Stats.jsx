@@ -1,13 +1,13 @@
-
+import { Box } from "@chakra-ui/react"
 
 function Stats({stats}){
 
     return(
-        <div>
-            <h4>Here come the stats!</h4>
+        <Box>
+            <h1>Letterboxd Movie Statistics</h1>
             <p>You have watched {stats.count} movies!</p>
             <p>On average each movie you watch is {stats.average_runtime} minutes long.</p>
-        </div>
+        </Box>
     )
 }
 

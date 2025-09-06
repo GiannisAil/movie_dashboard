@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import { send_csv } from '../services/api';
-import { Button } from "@chakra-ui/react"
+import { Button, Flex, Box } from "@chakra-ui/react"
 
 export default function UploadCSV({statsChanger}){
 
@@ -19,16 +19,20 @@ export default function UploadCSV({statsChanger}){
     }
 
     return (
-        <div>
-            <h1>Upload your Letterboxd watched.csv file</h1>
+        <Box>
+            <Flex align="center" gap="5" justify="center">
+
+            <h2>Upload your Letterboxd watched.csv file</h2>
             <input type="file" accept=".csv" id='selectedFile' style={{display: 'none'}} onChange={onFileChange}/>
-            <input type="button" value="Choose File" onClick={() => document.getElementById('selectedFile').click()} />
+            {/* <input type="button" value="Choose File" onClick={() => document.getElementById('selectedFile').click()} /> */}
+            <Button colorPalette="red" onClick={() => document.getElementById('selectedFile').click()}>Choose File</Button>
+            </Flex>
             { file && (
-                <div>
+                <Box>
                     <h2>File Selected: {file.name}</h2>
-                    <Button onClick={onFileUpload}>Get Your Stats!</Button>
-                </div>
+                    <Button variant={"ghost"} onClick={onFileUpload}>Get Your Stats!</Button>
+                </Box>
             )}
-        </div>
+        </Box>
     )
 }
