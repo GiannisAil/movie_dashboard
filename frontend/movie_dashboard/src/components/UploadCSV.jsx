@@ -19,14 +19,14 @@ export default function UploadCSV({statsChanger}){
     }
 
     return (
-        <Box>
+        <Box paddingBottom="6" >
             <Flex align="center" gap="5" justify="center">
-
-            <h2>Upload your Letterboxd watched.csv file</h2>
-            <input type="file" accept=".csv" id='selectedFile' style={{display: 'none'}} onChange={onFileChange}/>
-            {/* <input type="button" value="Choose File" onClick={() => document.getElementById('selectedFile').click()} /> */}
-            <Button colorPalette="red" onClick={() => document.getElementById('selectedFile').click()}>Choose File</Button>
+                <h2>Upload your Letterboxd watched.csv file</h2>
+                <input type="file" accept=".csv" id='selectedFile' style={{display: 'none'}} onChange={onFileChange}/>
+                {/* <input type="button" value="Choose File" onClick={() => document.getElementById('selectedFile').click()} /> */}
+                <Button colorPalette="red" onClick={() => document.getElementById('selectedFile').click()}>Choose File</Button>
             </Flex>
+
             { file && (
                 <Box>
                     <h2>File Selected: {file.name}</h2>
