@@ -45,10 +45,7 @@ function Home(){
     return (
         <Box>
             <title>Letterboxd Unboxed</title>
-            {/* <Navbar /> */}
-            {/* {movie && <Movie movie={movie} />} */}
             <UploadCSV statsChanger={setStats} />
-            {/* {stats && <Separator variant="solid" colorPalette="teal" />} */}
             {stats && <Stats stats={stats} />}
         </Box>
     );

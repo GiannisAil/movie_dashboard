@@ -6,6 +6,7 @@ backend/movies_cache.pkl
 
 # Node
 frontend/**/node_modules/
+frontend/movie_dashboard/src/components/Demo.jsx
 
 # General
 .DS_Store
