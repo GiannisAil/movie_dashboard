@@ -1,5 +1,6 @@
 import { Box, Heading, Text } from "@chakra-ui/react"
 import DirectorChart from "./DirectorChart";
+import GenreChart from "./GenreChart";
 
 function Stats({stats}){
 
@@ -9,6 +10,7 @@ function Stats({stats}){
             <Text>You have watched {stats.count} movies!</Text>
             <Text>On average each movie you watch is {stats.average_runtime} minutes long.</Text>
             <DirectorChart stats={stats} />
+            <GenreChart stats={stats} />
         </Box>
     )
 }
