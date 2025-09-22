@@ -1,4 +1,5 @@
 import { Chart, useChart } from "@chakra-ui/charts"
+import { Text } from "@chakra-ui/react";
 import { PieChart, Pie, Tooltip, Cell, Legend } from "recharts"
 
 // TMDB genre IDs to genre names
@@ -28,7 +29,9 @@ function GenreChart({stats}){
     ];
 
     return(
-        <Chart.Root maxH={"sm"} chart={chart}>
+        <>
+        <Text>Your most watched genres</Text>
+        <Chart.Root maxH={"sm"} chart={chart} marginTop={1} scale={0.9}>
             <PieChart>
                 <Pie
                     data={chart.data}
@@ -39,15 +42,20 @@ function GenreChart({stats}){
                     outerRadius={120}
                     fill="#8884d8"
                     label
-                >
+                    >
                     {chart.data.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                    cursor={{ fill: chart.color("bg.muted") }}
+                    animationDuration={100}
+                    content={<Chart.Tooltip />}
+                    />
                 <Legend />
             </PieChart>
         </Chart.Root>
+        </>
     )
 }
 
