@@ -18,7 +18,7 @@ function DirectorChart({stats}){
         series: [{ name: 'count', color: "teal.solid"}]
     })
 
-    console.log(chart.data)
+    // console.log(chart.data)
 
     return(
         // <p>Your most watched director is: {stats.favorite_director}</p>

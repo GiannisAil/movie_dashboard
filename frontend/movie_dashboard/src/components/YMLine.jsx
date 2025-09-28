@@ -23,7 +23,7 @@ function YMLine({stats}){
         series: [{name: 'value', color: "teal.solid"}]
     })
 
-    console.log(chart.data)
+    // console.log(chart.data)
 
     return(
         <>

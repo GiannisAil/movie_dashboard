@@ -21,7 +21,7 @@ function GenreChart({stats}){
         series: [{ name: 'value', color: "teal.solid"}]
     })
 
-    console.log(chart.data)
+    // console.log(chart.data)
 
     const COLORS = [
         "#0088FE", "#00C49F", "#FFBB28", "#FF8042", 
