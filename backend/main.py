@@ -61,7 +61,7 @@ async def get_csv(csv_file: UploadFile):
 
     csv_df = pd.read_csv(csv_file.file)
 
-    # # populate user's csv with extra data from the tmdb api
+    # populate user's csv with extra data from the tmdb api
     enriched = []
     for _, row in csv_df.iterrows():
         title = row.get("Name")
@@ -106,8 +106,8 @@ async def get_csv(csv_file: UploadFile):
     
     df = pd.DataFrame(enriched)
 
-    # Save
-    df.to_pickle("movies_cache.pkl") # save the result from api calls for faster development
+    # # Save
+    # df.to_pickle("movies_cache.pkl") # save the result from api calls for faster development
 
     # Load
     # df = pd.read_pickle("movies_cache.pkl") 
