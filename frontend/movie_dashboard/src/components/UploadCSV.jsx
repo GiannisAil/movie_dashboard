@@ -17,7 +17,7 @@ export default function UploadCSV({statsChanger}){
         formData.append('csv_file', file);
         setSpin(true);
         const res = await send_csv(formData);
-        statsChanger(res);
+        statsChanger(res.stats);
         console.log(res);
         setSpin(false);
         setDone(true);

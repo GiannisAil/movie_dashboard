@@ -62,55 +62,63 @@ async def get_csv(csv_file: UploadFile):
     csv_df = pd.read_csv(csv_file.file)
 
     # populate user's csv with extra data from the tmdb api
-    enriched = []
-    for _, row in csv_df.iterrows():
-        title = row.get("Name")
-        year = row.get("Year")
-        watch_date = row.get("Date")
-        tmdb_data = api_search.movies(str(title), year=int(year))
-        print(str(title))
-        # print(tmdb_data)
-        if tmdb_data.get('results'):
-            # check that the title matched. if the exact title isnt in the results, skip the movie
+    # enriched = []
+    # for _, row in csv_df.iterrows():
+    #     title = row.get("Name")
+    #     year = row.get("Year")
+    #     watch_date = row.get("Date")
+    #     tmdb_data = api_search.movies(str(title), year=int(year))
+    #     print(str(title))
+    #     # print(tmdb_data)
+    #     if tmdb_data.get('results'):
+    #         # check that the title matched. if the exact title isnt in the results, skip the movie
 
-            for result in tmdb_data:
-                if result.title == str(title):
-                    tmdb_data = result
-                    break
-            else:
-                continue # if the exact title can't be found, skip the movie. We are doing this to minimize the chance of getting wrong titles
+    #         for result in tmdb_data:
+    #             if result.title == str(title):
+    #                 tmdb_data = result
+    #                 break
+    #         else:
+    #             continue # if the exact title can't be found, skip the movie. We are doing this to minimize the chance of getting wrong titles
 
-            # tmdb_data = tmdb_data[0]
-            movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
-            # remove the row if the api search doesn't return anything, it most likely is a tv series
-        else:
-            continue
+    #         # tmdb_data = tmdb_data[0]
+    #         movie_data = id_search.details(tmdb_data["id"], append_to_response="casts") if tmdb_data else None # we can maybe use append to response here to get director
+    #         # remove the row if the api search doesn't return anything, it most likely is a tv series
+    #     else:
+    #         continue
 
-        enriched.append({
-            "name": title,
-            "year": year,
-            "watch_date": watch_date,
-            "tmdb_id": tmdb_data["id"] if tmdb_data else None,
-            "poster": f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}" if tmdb_data and tmdb_data.get("poster_path") else None,
-            "overview": tmdb_data.get("overview") if tmdb_data else None,
-            "release_date": tmdb_data.get("release_date") if tmdb_data else None,
-            "vote_average": tmdb_data.get("vote_average") if tmdb_data else None,
-            "genre_ids": tmdb_data.get("genre_ids") if tmdb_data else None,
-            "budget": movie_data.budget if movie_data else None,
-            "original_language": movie_data.original_language if movie_data else None,
-            "runtime": movie_data.runtime if movie_data else None,
-            "revenue": movie_data.revenue if movie_data else None, 
-            "director": next((c.name for c in movie_data.casts.crew if c.job == "Director"), None) if movie_data else None,
-        })
+        # enriched.append({
+        #     "name": title,
+        #     "year": year,
+        #     "watch_date": watch_date,
+        #     "tmdb_id": tmdb_data["id"] if tmdb_data else None,
+        #     "poster": f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}" if tmdb_data and tmdb_data.get("poster_path") else None,
+        #     "overview": tmdb_data.get("overview") if tmdb_data else None,
+        #     "release_date": tmdb_data.get("release_date") if tmdb_data else None,
+        #     "vote_average": tmdb_data.get("vote_average") if tmdb_data else None,
+        #     "genre_ids": tmdb_data.get("genre_ids") if tmdb_data else None,
+        #     "budget": movie_data.budget if movie_data else None,
+        #     "original_language": movie_data.original_language if movie_data else None,
+        #     "runtime": movie_data.runtime if movie_data else None,
+        #     "revenue": movie_data.revenue if movie_data else None, 
+        #     "director": next((c.name for c in movie_data.casts.crew if c.job == "Director"), None) if movie_data else None,
+        # })
     
     
-    df = pd.DataFrame(enriched)
+    # df = pd.DataFrame(enriched)
 
     # # Save
     # df.to_pickle("movies_cache.pkl") # save the result from api calls for faster development
 
     # Load
-    # df = pd.read_pickle("movies_cache.pkl") 
+    df = pd.read_pickle("movies_cache.pkl") 
+
+    df['genre_ids'] = df['genre_ids'].apply(
+        lambda x: list(x) if x is not None else []
+    )
+
+    # make copy of df, to send to frontend
+    df_to_frontend = df.to_dict(orient="records")
+    
 
     # number of movies watched
     movie_num = len(df)
@@ -180,7 +188,7 @@ async def get_csv(csv_file: UploadFile):
 
     # print(movies_per_year) #test, it works
 
-    return {"count": movie_num, 
+    stats = {"count": movie_num, 
             "oldest_movie": {"name": oldest_name, "year": oldest_year},
             "newest_movie": {"name": newest_name, "year": newest_year},
             "average_year": average_year,
@@ -194,6 +202,31 @@ async def get_csv(csv_file: UploadFile):
             "longest_movie": {"name": longest_movie_name, "runtime": longest_movie_runtime},
             "shortest_movie": {"name": shortest_movie_name, "runtime": shortest_movie_runtime},
             }
+
+    # return {"count": movie_num, 
+    #         "oldest_movie": {"name": oldest_name, "year": oldest_year},
+    #         "newest_movie": {"name": newest_name, "year": newest_year},
+    #         "average_year": average_year,
+    #         "favorite_genres": favorite_genres,
+    #         "favorite_directors": fav_directors,
+    #         "movies_per_year": movies_per_year,
+    #         "movies_per_month": movies_per_month,
+    #         "movies_per_weekday": movies_per_weekday,
+    #         "movies_per_year_month": movies_per_year_month,
+    #         "average_runtime": average_runtime,
+    #         "longest_movie": {"name": longest_movie_name, "runtime": longest_movie_runtime},
+    #         "shortest_movie": {"name": shortest_movie_name, "runtime": shortest_movie_runtime},
+    #         }
+    # print(df_to_frontend)
+    
+    
+    print(type(df['genre_ids'].iloc[0]))
+
+
+    return { 
+        "stats": stats,
+        "movies": df_to_frontend
+    }
 
 @app.get("/")
 def allok():
